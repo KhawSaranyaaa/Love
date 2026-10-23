@@ -1,0 +1,998 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ถึงหมวย 💌</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&family=Sriracha&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --purple: #b9a2ee;
+        --purple-deep: #7d5fc9;
+        --purple-soft: #e6dcff;
+        --pink: #ffc9dc;
+        --pink-deep: #f28bb0;
+        --cream: #fff4f1;
+        --ink: #4a3a6b;
+        --shadow:
+          0 8px 0 rgba(125, 95, 201, 0.18), 0 14px 24px rgba(125, 95, 201, 0.18);
+      }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+      }
+      body {
+        font-family: "Mali", "Sarabun", "Noto Sans Thai", sans-serif;
+        background: var(--cream);
+        color: var(--ink);
+        overflow: hidden;
+        background-image: radial-gradient(var(--pink) 2px, transparent 2.5px);
+        background-size: 28px 28px;
+      }
+      h1,
+      h2 {
+        font-family: "Sriracha", "Mali", sans-serif;
+        font-weight: 400;
+        margin: 0;
+      }
+      .stage {
+        position: fixed;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        text-align: center;
+        max-width: 430px;
+        margin: 0 auto;
+      }
+      .stage.on {
+        display: flex;
+        animation: pop 0.35s ease-out;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.92);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      .say {
+        white-space: pre-line;
+        font-size: 1.25rem;
+        min-height: 3.4em;
+        margin: 0 0 18px;
+        line-height: 1.5;
+        font-weight: 700;
+      }
+      .peng {
+        width: 120px;
+        height: auto;
+        margin-bottom: 8px;
+        animation: bob 2.2s ease-in-out infinite;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(-8px) rotate(-3deg);
+        }
+      }
+      .hint {
+        font-size: 0.95rem;
+        opacity: 0.75;
+        margin-top: 14px;
+      }
+      /* ซอง */
+      .env {
+        position: relative;
+        border: 4px solid var(--purple-deep);
+        border-radius: 22px;
+        background: var(--purple-soft);
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-family: inherit;
+        color: var(--ink);
+        padding: 0;
+      }
+      .env::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        height: 52%;
+        background: var(--purple);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        border-radius: 18px 18px 0 0;
+        opacity: 0.7;
+      }
+      .env span {
+        position: relative;
+        z-index: 1;
+      }
+      .env:active {
+        transform: translateY(3px);
+      }
+      #nest {
+        width: min(86vw, 340px);
+        height: min(60vw, 240px);
+      }
+      .env.shake {
+        animation: shake 0.4s;
+      }
+      @keyframes shake {
+        25% {
+          transform: rotate(-6deg);
+        }
+        75% {
+          transform: rotate(6deg);
+        }
+      }
+      #grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        width: 100%;
+      }
+      #grid .env {
+        height: 100px;
+        font-size: 2rem;
+      }
+      #grid .env:nth-child(5) {
+        grid-column: 1/-1;
+        justify-self: center;
+        width: 50%;
+      }
+      /* ด่านสุดท้าย */
+      .btns {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      .btn {
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 1.3rem;
+        border: 4px solid var(--purple-deep);
+        border-radius: 999px;
+        padding: 14px 34px;
+        background: var(--pink);
+        color: var(--ink);
+        box-shadow: 0 6px 0 var(--purple-deep);
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 2px 0 var(--purple-deep);
+      }
+      #no {
+        background: #fff;
+        z-index: 5;
+      }
+      #no.run {
+        position: fixed;
+      }
+      /* หลังตอบตกลง */
+      #yes-stage {
+        overflow: auto;
+        justify-content: flex-start;
+        padding-top: 28px;
+      }
+      .count {
+        font-size: 1.15rem;
+        background: #fff;
+        border: 3px dashed var(--purple);
+        border-radius: 18px;
+        padding: 10px 16px;
+        margin: 8px 0 16px;
+      }
+      .count {
+        width: 100%;
+      }
+      .clock {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .clock div {
+        background: var(--purple-soft);
+        border-radius: 14px;
+        padding: 8px 2px;
+        display: flex;
+        flex-direction: column;
+      }
+      .clock b {
+        color: var(--purple-deep);
+        font-size: 1.5rem;
+        font-variant-numeric: tabular-nums;
+      }
+      .clock small {
+        font-size: 0.8rem;
+      }
+      .letter {
+        background: #fff;
+        border: 4px solid var(--pink-deep);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 18px;
+        width: 100%;
+        text-align: left;
+        line-height: 1.8;
+        margin-bottom: 16px;
+        min-height: 80px;
+      }
+      .photo {
+        width: 170px;
+        height: 170px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        border: 4px solid var(--purple);
+        overflow: hidden;
+        background: var(--purple-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        color: var(--purple-deep);
+        text-align: center;
+        padding: 12px;
+      }
+      .photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      #opts {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+      }
+      #opts .btn {
+        font-size: 1.05rem;
+        padding: 12px 16px;
+        width: 100%;
+      }
+      .hrt {
+        position: fixed;
+        border: 0;
+        background: none;
+        font-size: 2.6rem;
+        cursor: pointer;
+        animation: bob 1.6s ease-in-out infinite;
+        touch-action: manipulation;
+        padding: 6px;
+      }
+      .line {
+        margin: 0 0 10px;
+        animation: pop 0.5s ease-out;
+      }
+      .why {
+        margin-bottom: 30px;
+        width: 100%;
+      }
+      .why p {
+        background: var(--purple-soft);
+        border: 3px solid var(--purple);
+        border-radius: 16px;
+        padding: 10px 14px;
+        margin: 0 0 10px;
+        text-align: left;
+        animation: pop 0.4s ease-out;
+      }
+      #sf {
+        max-width: none;
+        width: 100%;
+        transition:
+          background 1.6s,
+          color 1.6s;
+      }
+      #sf.dark {
+        background: #2b2142;
+        color: #fff4f1;
+      }
+      #sf.dark .peng {
+        animation: none;
+        filter: brightness(0.85);
+      }
+      #sf .say {
+        font-size: 1.4rem;
+        min-height: 5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #sfBtns {
+        display: none;
+        flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        max-width: 320px;
+        margin-top: 10px;
+      }
+      #sfBtns .btn {
+        width: 100%;
+      }
+      .btn.ghost {
+        background: transparent;
+        color: #fff4f1;
+        border-color: var(--purple);
+        box-shadow: none;
+      }
+      .glitch {
+        animation: glitch 0.15s steps(2) infinite;
+      }
+      @keyframes glitch {
+        0% {
+          transform: translate(3px, -2px);
+          filter: hue-rotate(60deg);
+        }
+        100% {
+          transform: translate(-3px, 2px);
+          filter: invert(0.2);
+        }
+      }
+      #fx {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 50;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+      .cert {
+        width: 100%;
+        background: #fff;
+        border: 4px double var(--purple-deep);
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        padding: 18px 14px;
+        margin-bottom: 16px;
+        animation: pop 0.6s ease-out;
+      }
+      .cert h2 {
+        font-size: 1.7rem;
+        color: var(--purple-deep);
+      }
+      .cert-date {
+        margin: 8px 0;
+      }
+      .cert-date b {
+        color: var(--pink-deep);
+      }
+      .cert-big {
+        font-family: "Sriracha", "Mali", sans-serif;
+        font-size: 1.6rem;
+        margin: 6px 0 10px;
+      }
+      .cert small {
+        opacity: 0.7;
+      }
+
+      #yes-stage > * {
+        flex-shrink: 0;
+      }
+      #yes-stage {
+        padding-bottom: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="fx"></canvas>
+
+    <!-- ด่าน 1: ซองซ้อน -->
+    <section class="stage on" id="s1">
+      <svg class="peng" viewBox="0 0 100 110" aria-hidden="true">
+        <use href="#pg" />
+      </svg>
+      <p class="say" id="nestSay">มีของมาให้หมวย 💌<br />แตะซองเลย</p>
+      <button class="env" id="nest" aria-label="เปิดซอง">
+        <span>💌</span>
+      </button>
+    </section>
+
+    <!-- ด่าน 2: หาซองที่ถูก -->
+    <section class="stage" id="s2">
+      <p class="say" id="pickSay">ซองไหนล่ะ? เลือกดีๆ นะ</p>
+      <div id="grid"></div>
+      <div class="hint">มีซองเดียวที่ใช่ 🤫</div>
+    </section>
+
+    <!-- ด่านควิซ -->
+    <section class="stage" id="sq">
+      <svg class="peng" viewBox="0 0 100 110" aria-hidden="true">
+        <use href="#pg" />
+      </svg>
+      <p class="say" id="qText"></p>
+      <div id="opts"></div>
+    </section>
+
+    <!-- ด่านจับหัวใจ -->
+    <section class="stage" id="sg">
+      <p class="say" id="gText">จับหัวใจให้ครบ 0/7 💗</p>
+    </section>
+
+    <!-- ด่าน 3: คำถาม -->
+    <section class="stage" id="s3">
+      <svg class="peng" viewBox="0 0 100 110" aria-hidden="true">
+        <use href="#pg" />
+      </svg>
+      <h1 style="font-size: 2rem; margin-bottom: 10px">เป็นแฟนกันไหม?</h1>
+      <p class="say" id="askSay">คิดดีๆ ก่อนตอบนะ 🥺</p>
+      <div class="btns">
+        <button class="btn" id="yes">ตกลง</button
+        ><button class="btn" id="no">ไม่</button>
+      </div>
+    </section>
+
+    <!-- ล็อกหลอก แล้วกลับมาจริงจัง -->
+    <section class="stage" id="sf">
+      <svg class="peng" viewBox="0 0 100 110" aria-hidden="true">
+        <use href="#pg" />
+      </svg>
+      <p class="say" id="sfSay"></p>
+      <div id="sfBtns">
+        <button class="btn" id="sfYes">ตกลง</button
+        ><button class="btn ghost" id="sfWait">ขอคิดก่อน</button>
+      </div>
+    </section>
+
+    <!-- ตอบตกลง -->
+    <section class="stage" id="yes-stage">
+      <svg class="peng" viewBox="0 0 100 110" aria-hidden="true">
+        <use href="#pg" />
+      </svg>
+      <h1 style="font-size: 1.9rem">เย้!! 🎉</h1>
+      <div class="count">
+        เรารู้จักกันมาแล้ว
+        <div class="clock">
+          <div><b id="cd">0</b><small>วัน</small></div>
+          <div><b id="ch">0</b><small>ชั่วโมง</small></div>
+          <div><b id="cm">0</b><small>นาที</small></div>
+          <div><b id="cs">0</b><small>วินาที</small></div>
+        </div>
+      </div>
+      <div class="photo" id="photo"></div>
+      <div class="letter" id="letter"></div>
+      <div class="cert" id="cert" hidden>
+        <svg
+          class="peng"
+          viewBox="0 0 100 110"
+          aria-hidden="true"
+          style="width: 70px"
+        >
+          <use href="#pg" />
+        </svg>
+        <h2>ตกลงนะ 💜</h2>
+        <p class="cert-date">วันที่ <b id="certDate"></b></p>
+        <p class="cert-big">เป็นแฟนกันแล้วนะ 🐧💗</p>
+        <small>แคปหน้าจอเก็บไว้ด้วยน้า 📸</small>
+      </div>
+      <button
+        class="btn"
+        id="whyBtn"
+        style="font-size: 1rem; margin-bottom: 16px"
+      >
+        เหตุผลที่เราชอบเธอ 💜
+      </button>
+      <div class="why" id="why"></div>
+    </section>
+
+    <!-- เพนกวิน SVG วาดเอง -->
+    <svg width="0" height="0" style="position: absolute">
+      <defs>
+        <g id="pg">
+          <ellipse
+            cx="50"
+            cy="104"
+            rx="26"
+            ry="4"
+            fill="#4a3a6b"
+            opacity=".12"
+          />
+          <ellipse cx="50" cy="62" rx="32" ry="40" fill="#4a3a6b" />
+          <ellipse cx="50" cy="68" rx="22" ry="30" fill="#fff" />
+          <ellipse
+            cx="20"
+            cy="66"
+            rx="8"
+            ry="18"
+            fill="#4a3a6b"
+            transform="rotate(14 20 66)"
+          />
+          <ellipse
+            cx="80"
+            cy="66"
+            rx="8"
+            ry="18"
+            fill="#4a3a6b"
+            transform="rotate(-14 80 66)"
+          />
+          <circle cx="40" cy="44" r="5" fill="#fff" />
+          <circle cx="60" cy="44" r="5" fill="#fff" />
+          <circle cx="41" cy="45" r="2.6" fill="#4a3a6b" />
+          <circle cx="61" cy="45" r="2.6" fill="#4a3a6b" />
+          <ellipse cx="32" cy="54" rx="5" ry="3" fill="#f28bb0" opacity=".8" />
+          <ellipse cx="68" cy="54" rx="5" ry="3" fill="#f28bb0" opacity=".8" />
+          <path d="M43 52 Q50 62 57 52 Q50 56 43 52Z" fill="#ffb347" />
+          <ellipse cx="38" cy="102" rx="9" ry="4" fill="#ffb347" />
+          <ellipse cx="62" cy="102" rx="9" ry="4" fill="#ffb347" />
+        </g>
+      </defs>
+    </svg>
+
+    <script>
+      /* ====== ส่วนที่ต้องแก้ ====== */
+      const ME = "เค้า"; // สรรพนามเรียกตัวเอง เช่น เรา/พี่/เค้า
+      const START_DATE = "2026-08-16"; // วันที่เริ่มรู้จัก (ปี-เดือน-วัน)
+      const PHOTO_SRC = "/my.jpg"; // ใส่รูป (data URI หรือชื่อไฟล์) ถ้าว่างจะโชว์กรอบแทน
+      const SOUND_ON = true; // เสียงเอฟเฟกต์สั้นๆ (true/false)
+      // จดหมายตอนจบ (ทีละบรรทัด จะค่อยๆ โผล่ขึ้นมา)
+      const LETTER_LINES = [
+        "ถึงเธอ",
+        `ตั้งแต่วันที่ได้รู้จัก ${ME}ยิ้มบ่อยขึ้นเยอะเลย`,
+        "ทุกครั้งที่ได้คุยกัน วันนั้นก็ดีขึ้นอัตโนมัติ",
+        `${ME}อาจไม่ใช่คนพูดเก่ง แต่อยากให้เธอรู้ว่าเธอพิเศษมาก`,
+        `${ME}อยากอยู่ข้างๆ เธอไปนานๆ นะ`,
+        "ขอโทษที่หลายๆ ครั้งเค้าทำให้อ้วนต้องร้องไห้นะ",
+        `${ME}อยู่ข้างอ้วนเสมอนะะะะ`,
+        "ขอบคุณที่ตอบตกลงน้า 🐧💜",
+      ];
+      // เหตุผลที่ชอบ (แตะทีละข้อ)
+      const REASONS = [
+        "ยิ้มแล้วโลกสดใสขึ้น ☀️",
+        "ไม่ยอมแพ้ในตัวเค้าเลย",
+        "อยู่ด้วยแล้วสบายใจ",
+        "ยอมรับในสิ่งที่เค้าเป็น",
+        "เป็นเธอนี่แหละ ไม่ต้องมีเหตุผลอื่นแล้ว 💗",
+      ];
+      // ควิซ: ตอบข้อไหนก็ผ่าน (r = ข้อความตอบกลับของแต่ละตัวเลือก)
+      const QUIZ = [
+        {
+          q: "ถ้าหมวยหิวตอนดึก เราควรทำอะไร?",
+          a: ["สั่งของอร่อยไปให้ 🍟", "ชวนไปกินด้วยกัน 🍜", "แอบกินคนเดียว 😈"],
+          r: [
+            "ถูกใจมาก!",
+            "ดีมากกก ได้คะแนนเต็ม",
+            "ผิดแล้ว! แต่ให้ผ่านก็ได้ 😝",
+          ],
+        },
+        {
+          q: "เพนกวินตัวนี้น่ารักแค่ไหน?",
+          a: ["น่ารักมาก 🐧", "น่ารักที่สุดในโลก", "น่ารักเท่าหมวย"],
+          r: ["เห็นด้วย", "แน่นอน!", "คำตอบนี้ได้โบนัส 💜"],
+        },
+        {
+          q: "ถ้าเราขอเป็นแฟน หมวยจะ...",
+          a: ["คิดดูก่อน 🤔", "ยังไม่รู้ ลองดูข้างหน้า", "รออยู่แล้ว 🥹"],
+          r: [
+            "ได้ๆ เดี๋ยวไปด่านต่อไปก่อน",
+            "เฮ้ย ใจเย็นๆ เหลืออีกด่านเดียว",
+            "เก่งมาก ไปต่อเลย!",
+          ],
+        },
+      ];
+      // ช่วงจริงจัง (ขึ้นทีละบรรทัด) และคำถามสุดท้าย
+      const SERIOUS_LINES = [
+        "เดี๋ยวนะ... ขอหยุดเล่นสักแป๊บ",
+        "ที่ผ่านมากวนมาตั้งนาน",
+        "แต่เรื่องนี้ เราไม่ได้ล้อเล่นเลยนะ",
+        "เค้ารักอ้วนจริงๆ นะ",
+      ];
+      const FINAL_Q = "เป็นแฟนกัน ได้ไหม?";
+      /* ====== ข้อความกวนๆ (แก้ได้) ====== */
+      const NEST_MSGS = [
+        "ยังไม่ใช่ซองสุดท้ายนะ 😝",
+        "ซองนี้ก็ยังไม่ใช่ แตะอีก!",
+        "ยังมีอีก ไม่ได้หลอกนะ 🤭",
+        "เกือบแล้วๆ อีกชั้นเดียวจริงๆ 🤏",
+        "โอเค อันนี้ซองสุดท้ายแล้ว (จริงมั้ย?) 😜",
+      ];
+      const WRONG_MSGS = [
+        "ซองเปล่า! เสียใจด้วยนะ 🫥",
+        "ในซองมีแต่ลมจ้า 💨",
+        "ใกล้แล้ว... ใกล้ซองข้างๆ 😜",
+        "ลองใหม่ ตาดีๆ หน่อยนะหมวย 👀",
+        "ซองนี้เพนกวินกินไปแล้ว 🐧",
+        "ไม่ใช่ซองนี้ เดาอีกที 🎲",
+      ];
+      const RUN_MSGS = [
+        "จับให้ได้ก่อนสิ 😜",
+        "อุ๊ย ปุ่มหนีไปแล้ว 🏃",
+        "ไม่ใช่ปุ่มนี้หรอก ลองปุ่มตกลงไหม?",
+        "ปุ่มนี้ขี้อาย แตะไม่ได้นะ 🙈",
+        "อีกนิดเดียว ปุ่มจะยอมแล้ว 🥹",
+      ];
+      /* ====== จบส่วนที่แก้ ====== */
+
+      const $ = (id) => document.getElementById(id);
+      const show = (id) => {
+        document
+          .querySelectorAll(".stage")
+          .forEach((s) => s.classList.remove("on"));
+        $(id).classList.add("on");
+      };
+
+      /* เสียง: เริ่มหลังแตะครั้งแรก */
+      let ac = null;
+      function beep(f = 660, d = 0.12, type = "sine") {
+        if (!SOUND_ON) return;
+        try {
+          ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+          if (ac.state === "suspended") ac.resume();
+          const o = ac.createOscillator(),
+            g = ac.createGain();
+          o.type = type;
+          o.frequency.value = f;
+          g.gain.setValueAtTime(0.15, ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d);
+          o.connect(g);
+          g.connect(ac.destination);
+          o.start();
+          o.stop(ac.currentTime + d);
+        } catch (e) {}
+      }
+      const ding = () => {
+        beep(880, 0.15);
+        setTimeout(() => beep(1175, 0.2), 110);
+      };
+      const pop = () => beep(300, 0.08, "triangle");
+
+      /* ด่าน 1 */
+      let layer = 0;
+      $("nest").addEventListener("click", () => {
+        pop();
+        if (layer < 5) {
+          $("nestSay").textContent = NEST_MSGS[layer];
+          layer++;
+          const n = $("nest");
+          n.style.width = parseFloat(getComputedStyle(n).width) * 0.84 + "px";
+          n.style.height = parseFloat(getComputedStyle(n).height) * 0.84 + "px";
+          n.classList.remove("shake");
+          void n.offsetWidth;
+          n.classList.add("shake");
+          if (layer === 5)
+            setTimeout(() => {
+              show("s2");
+              buildGrid();
+            }, 700);
+        }
+      });
+
+      /* ด่าน 2 */
+      let correct = 0,
+        lastMsg = -1;
+      function randInt(n) {
+        return Math.floor(Math.random() * n);
+      }
+      function buildGrid() {
+        correct = randInt(5);
+        const g = $("grid");
+        g.innerHTML = "";
+        for (let i = 0; i < 5; i++) {
+          const b = document.createElement("button");
+          b.className = "env";
+          b.innerHTML = "<span>✉️</span>";
+          b.setAttribute("aria-label", "ซองที่ " + (i + 1));
+          b.onclick = () => pick(i, b);
+          g.appendChild(b);
+        }
+      }
+      function pick(i, b) {
+        if (i === correct) {
+          ding();
+          $("pickSay").textContent = "ใช่แล้ว!! ซองนี้แหละ 💜";
+          b.querySelector("span").textContent = "💜";
+          setTimeout(() => {
+            show("sq");
+            startQuiz();
+          }, 700);
+          return;
+        }
+        pop();
+        let m;
+        do {
+          m = randInt(WRONG_MSGS.length);
+        } while (m === lastMsg);
+        lastMsg = m;
+        $("pickSay").textContent = WRONG_MSGS[m];
+        b.classList.add("shake");
+        setTimeout(buildGrid, 550);
+      }
+
+      /* ควิซ */
+      let qi = 0;
+      function startQuiz() {
+        qi = 0;
+        showQ();
+      }
+      function showQ() {
+        const q = QUIZ[qi];
+        $("qText").textContent = `(${qi + 1}/${QUIZ.length}) ${q.q}`;
+        const o = $("opts");
+        o.innerHTML = "";
+        q.a.forEach((t, i) => {
+          const b = document.createElement("button");
+          b.className = "btn";
+          b.textContent = t;
+          b.onclick = () => {
+            ding();
+            o.querySelectorAll("button").forEach((x) => (x.disabled = true));
+            $("qText").textContent = q.r[i];
+            setTimeout(() => {
+              qi++;
+              if (qi < QUIZ.length) showQ();
+              else {
+                show("sg");
+                startGame();
+              }
+            }, 1300);
+          };
+          o.appendChild(b);
+        });
+      }
+
+      /* จับหัวใจ */
+      const NEED = 7;
+      let got = 0,
+        heart = null;
+      function startGame() {
+        got = 0;
+        $("gText").textContent = `จับหัวใจให้ครบ 0/${NEED} 💗`;
+        spawn();
+      }
+      function spawn() {
+        if (heart) heart.remove();
+        heart = document.createElement("button");
+        heart.className = "hrt";
+        heart.textContent = ["💗", "💜", "🐧"][randInt(3)];
+        heart.setAttribute("aria-label", "หัวใจ");
+        const pad = 12,
+          top = 140;
+        heart.style.left =
+          pad + Math.random() * (innerWidth - 70 - pad * 2) + "px";
+        heart.style.top = top + Math.random() * (innerHeight - top - 80) + "px";
+        heart.onclick = () => {
+          pop();
+          got++;
+          $("gText").textContent = `จับหัวใจให้ครบ ${got}/${NEED} 💗`;
+          if (got >= NEED) {
+            ding();
+            heart.remove();
+            $("gText").textContent = "ครบแล้ว! เก่งมากกก 🎉";
+            setTimeout(() => show("s3"), 900);
+          } else spawn();
+        };
+        $("sg").appendChild(heart);
+      }
+
+      /* ด่าน 3 */
+      let tries = 0;
+      const no = $("no");
+      function dodge(e) {
+        if (e) {
+          e.preventDefault();
+        }
+        if (no.dataset.yes) return;
+        tries++;
+        pop();
+        if (tries >= 5) {
+          turnYes();
+          return;
+        }
+        $("askSay").textContent = RUN_MSGS[tries - 1];
+        const w = no.offsetWidth,
+          h = no.offsetHeight,
+          pad = 10;
+        const maxX = innerWidth - w - pad,
+          maxY = innerHeight - h - pad;
+        no.classList.add("run");
+        no.style.left = Math.max(pad, Math.random() * maxX) + "px";
+        no.style.top = Math.max(pad, Math.random() * maxY) + "px";
+      }
+      function turnYes() {
+        no.dataset.yes = 1;
+        no.textContent = "ตกลง";
+        no.className = "btn";
+        no.style.cssText = "";
+        $("askSay").textContent = "ในที่สุดก็ยอมแล้วว 🥹";
+        no.onclick = startFake;
+      }
+      no.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "mouse") dodge(e);
+      });
+      no.addEventListener("pointerdown", (e) => {
+        if (!no.dataset.yes) dodge(e);
+      });
+      no.addEventListener("click", (e) => {
+        if (!no.dataset.yes) e.preventDefault();
+      });
+      $("yes").addEventListener("click", startFake);
+
+      /* ล็อกหลอก -> จริงจัง */
+      function startFake() {
+        show("sf");
+        const sf = $("sf"),
+          say = $("sfSay"),
+          btns = $("sfBtns");
+        sf.classList.remove("dark");
+        btns.style.display = "none";
+        say.classList.remove("glitch");
+        const set = (t) => {
+          say.textContent = t;
+        };
+        const steps = [
+          [
+            0,
+            () => {
+              set('🎉 ยินดีด้วย! คุณได้เป็น "พี่น้องกัน" ตลอดไปปปปปป 🎉');
+              ding();
+            },
+          ],
+          [
+            2400,
+            () => {
+              say.classList.add("glitch");
+              set('⚠️ ระบบผิดพลาด\nerror 502: คำว่า "พี่น้อง"');
+              beep(120, 0.4, "sawtooth");
+            },
+          ],
+          [
+            4400,
+            () => {
+              say.classList.remove("glitch");
+              set("กำลังกู้คืนระบบ...");
+            },
+          ],
+          [
+            6000,
+            () => {
+              sf.classList.add("dark");
+              set("");
+            },
+          ],
+        ];
+        SERIOUS_LINES.forEach((t, i) =>
+          steps.push([
+            7200 + i * 2600,
+            () => {
+              set(t);
+              beep(330, 0.25);
+            },
+          ]),
+        );
+        steps.push([
+          7200 + SERIOUS_LINES.length * 2600 + 300,
+          () => {
+            set(FINAL_Q);
+            btns.style.display = "flex";
+          },
+        ]);
+        steps.forEach(([ms, fn]) => setTimeout(fn, ms));
+        $("sfYes").onclick = accept;
+        $("sfWait").onclick = () => {
+          set("ได้เลย เรารอได้เสมอ 🤍");
+          setTimeout(() => set(FINAL_Q), 1800);
+        };
+      }
+
+      /* ตอบตกลง */
+      function accept() {
+        ding();
+        const now = new Date();
+        $("certDate").textContent =
+          now.toLocaleDateString("th-TH", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }) +
+          " เวลา " +
+          now.toLocaleTimeString("th-TH", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }) +
+          " น.";
+        show("yes-stage");
+        const start = new Date(
+          START_DATE.includes("T") ? START_DATE : START_DATE + "T00:00:00",
+        );
+        clearInterval(window._clk);
+        const tick = () => {
+          let t = Math.max(0, Math.floor((Date.now() - start) / 1000));
+          $("cd").textContent = Math.floor(t / 86400);
+          $("ch").textContent = Math.floor((t % 86400) / 3600);
+          $("cm").textContent = Math.floor((t % 3600) / 60);
+          $("cs").textContent = t % 60;
+        };
+        tick();
+        window._clk = setInterval(tick, 1000);
+        const L = $("letter");
+        L.innerHTML = "";
+        let li = 0;
+        (function nextLine() {
+          if (li >= LETTER_LINES.length) {
+            $("cert").hidden = false;
+            $("cert").scrollIntoView({ behavior: "smooth", block: "center" });
+            return;
+          }
+          const p = document.createElement("p");
+          p.className = "line";
+          p.textContent = LETTER_LINES[li++];
+          L.appendChild(p);
+          setTimeout(nextLine, 1700);
+        })();
+        let ri = 0;
+        $("why").innerHTML = "";
+        $("whyBtn").onclick = () => {
+          if (ri < REASONS.length) {
+            pop();
+            const p = document.createElement("p");
+            p.textContent = `${ri + 1}. ${REASONS[ri++]}`;
+            $("why").appendChild(p);
+            $("whyBtn").textContent =
+              ri < REASONS.length ? "ข้อต่อไป 💜" : "พอแค่นี้ก่อนดีกว่าา 💗";
+          }
+        };
+        $("photo").innerHTML = PHOTO_SRC
+          ? `<img src="${PHOTO_SRC}" alt="">`
+          : "📷 ที่ใส่รูปของเรา";
+        confetti();
+      }
+
+      /* confetti หัวใจ + เพนกวิน (canvas) */
+      function confetti() {
+        const c = $("fx"),
+          x = c.getContext("2d");
+        c.width = innerWidth;
+        c.height = innerHeight;
+        const icons = ["💜", "💗", "🐧", "💖"];
+        const ps = Array.from({ length: 60 }, () => ({
+          x: Math.random() * c.width,
+          y: -20 - Math.random() * c.height * 0.6,
+          v: 2 + Math.random() * 3,
+          s: 18 + Math.random() * 16,
+          i: icons[randInt(4)],
+          w: Math.random() * 2,
+        }));
+        const calm = matchMedia("(prefers-reduced-motion:reduce)").matches;
+        let t = 0;
+        (function f() {
+          x.clearRect(0, 0, c.width, c.height);
+          ps.forEach((p) => {
+            p.y += calm ? 0 : p.v;
+            p.x += Math.sin((t + p.w * 50) / 20);
+            x.font = p.s + "px serif";
+            x.fillText(p.i, p.x, calm ? p.s + p.w * 100 : p.y);
+          });
+          if (++t < 420 || (calm && t < 200)) requestAnimationFrame(f);
+          else x.clearRect(0, 0, c.width, c.height);
+        })();
+      }
+    </script>
+  </body>
+</html>
